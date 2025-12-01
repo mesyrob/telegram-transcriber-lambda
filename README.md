@@ -24,7 +24,7 @@ A serverless Telegram bot that transcribes voice messages and audio files using 
 ## 🧱 Architecture
 
 ```mermaid
-graph LR
+flowchart LR
     User -->|voice/audio| Telegram
     Telegram -->|Webhook POST JSON| Lambda[Lambda Function URL]
     Lambda -->|download file| TelegramFileAPI[Telegram File API]
@@ -32,7 +32,7 @@ graph LR
     OpenAI -->|transcript text| Lambda
     Lambda -->|sendMessage| Telegram
     Telegram --> User
-
+```
 
 
 ## 🔐 Environment Variables
