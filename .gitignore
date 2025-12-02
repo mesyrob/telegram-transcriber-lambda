@@ -1,2 +1,37 @@
+# Build artifacts
 function.zip
 package/
+locked-requirements.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Environment variables and secrets
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+config.json
+
+# AWS
+.aws/
+aws-credentials
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

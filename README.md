@@ -64,4 +64,25 @@ it also needs:
 - `lambda:GetFunctionConfiguration`
 - `lambda:UpdateFunctionConfiguration`
 
-Attach these permissions to the Lambda’s execution role in IAM.
+Attach these permissions to the Lambda's execution role in IAM.
+
+## 🔒 Security Best Practices
+
+### Never Commit Secrets
+- **DO NOT** hardcode API keys, tokens, or credentials in code
+- Use AWS Lambda environment variables for all secrets
+- Ensure `.gitignore` excludes `.env*`, `*.pem`, `*.key`, and credential files
+
+### AWS Credentials
+- The Makefile uses `AWS_PROFILE` to reference named profiles in `~/.aws/credentials`
+- Never hardcode AWS access keys or secret keys
+- Use IAM roles for Lambda execution (credentials are managed by AWS)
+
+### Rotate Credentials Regularly
+- Rotate your `TELEGRAM_TOKEN` and `OPENAI_API_KEY` periodically
+- If credentials are ever leaked, rotate immediately and revoke the old ones
+
+### Bot Password
+- Set a strong `BOT_PASSWORD` environment variable
+- Consider using a random UUID or long passphrase
+- Only share with authorized users through secure channels
