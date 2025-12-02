@@ -44,17 +44,26 @@ def send_message(chat_id, text):
     )
 
 
-def transcribe_audio(audio_path):
+def transcribe_audio(media_path):
+    """Transcribe audio from audio or video file using OpenAI API."""
     headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
-    
-    with open(audio_path, "rb") as f:
+
+    # Determine mime type based on file extension
+    if media_path.endswith('.mp4'):
+        mime_type = "video/mp4"
+        filename = "media.mp4"
+    else:
+        mime_type = "audio/ogg"
+        filename = "audio.ogg"
+
+    with open(media_path, "rb") as f:
         resp = requests.post(
             OPENAI_TRANSCRIBE_URL,
             headers=headers,
             data={"model": "gpt-4o-transcribe", "response_format": "text"},
-            files={"file": ("audio.ogg", f, "audio/ogg")},
+            files={"file": (filename, f, mime_type)},
         )
-    
+
     resp.raise_for_status()
     return resp.text.strip()
 
@@ -90,16 +99,30 @@ def lambda_handler(event, context):
         return {"statusCode": 200}
 
     # -----------------------------
-    # 3. HANDLE VOICE OR AUDIO
+    # 3. HANDLE VOICE, AUDIO, OR VIDEO
     # -----------------------------
     voice = message.get("voice")
     audio = message.get("audio")
+    video = message.get("video")
+    video_note = message.get("video_note")
 
-    if not (voice or audio):
-        send_message(chat_id, "Send me a voice message or audio file.")
+    if not (voice or audio or video or video_note):
+        send_message(chat_id, "Send me a voice message, audio file, or video.")
         return {"statusCode": 200}
 
-    file_id = voice["file_id"] if voice else audio["file_id"]
+    # Get file_id from whichever type was sent
+    if voice:
+        file_id = voice["file_id"]
+        file_extension = "ogg"
+    elif audio:
+        file_id = audio["file_id"]
+        file_extension = "ogg"
+    elif video:
+        file_id = video["file_id"]
+        file_extension = "mp4"
+    else:  # video_note
+        file_id = video_note["file_id"]
+        file_extension = "mp4"
 
     # Get file path
     file_info = requests.get(
@@ -108,17 +131,17 @@ def lambda_handler(event, context):
     file_path = file_info["result"]["file_path"]
 
     # Download
-    audio_bytes = requests.get(
+    file_bytes = requests.get(
         f"https://api.telegram.org/file/bot{TELEGRAM_TOKEN}/{file_path}"
     ).content
 
-    audio_path = "/tmp/audio.ogg"
-    with open(audio_path, "wb") as f:
-        f.write(audio_bytes)
+    media_path = f"/tmp/media.{file_extension}"
+    with open(media_path, "wb") as f:
+        f.write(file_bytes)
 
-    # Transcribe
+    # Transcribe (OpenAI API extracts audio from video automatically)
     try:
-        transcript = transcribe_audio(audio_path)
+        transcript = transcribe_audio(media_path)
         send_message(chat_id, transcript)
     except Exception as e:
         print("transcription error:", e)

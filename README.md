@@ -1,10 +1,10 @@
 # Telegram Voice Transcriber Bot (AWS Lambda)
 
-A serverless Telegram bot that transcribes voice messages and audio files using OpenAI’s speech-to-text API.
+A serverless Telegram bot that transcribes voice messages, audio files, and videos using OpenAI's speech-to-text API.
 
 - 🧠 Runs on **AWS Lambda** (Function URL)
 - 📲 Triggered by **Telegram webhook**
-- 🗣 Transcribes **voice messages & audio files**
+- 🗣 Transcribes **voice messages, audio files & videos**
 - 🔐 Private: only allowed users can use it (simple allowlist or password gate)
 - 💸 Cheap: Lambda cost ~0, OpenAI billed per audio minute
 
@@ -12,11 +12,13 @@ A serverless Telegram bot that transcribes voice messages and audio files using 
 
 ## ✨ Features
 
-- Forward or send a voice message to the bot → get back text.
+- Forward or send a voice message, audio file, or video to the bot → get back transcribed text.
 - Supports:
   - Telegram voice notes (`voice`)
   - Telegram audio files (`audio`)
-- Password / allowlist based access so random people can’t burn your OpenAI credits.
+  - Telegram videos (`video`)
+  - Telegram video messages / video notes (`video_note`)
+- Password / allowlist based access so random people can't burn your OpenAI credits.
 - Stateless, serverless, no polling, no server to manage.
 
 ---
@@ -25,7 +27,7 @@ A serverless Telegram bot that transcribes voice messages and audio files using 
 
 ```mermaid
 flowchart LR
-    User -->|voice/audio| Telegram
+    User -->|voice/audio/video| Telegram
     Telegram -->|Webhook POST JSON| Lambda[Lambda Function URL]
     Lambda -->|download file| TelegramFileAPI[Telegram File API]
     Lambda -->|POST /v1/audio/transcriptions| OpenAI[OpenAI API]
