@@ -1,7 +1,7 @@
 [project]
 name = "telegram-transcriber-bot"
-version = "0.1.0"
-description = "Serverless Telegram voice transcriber bot on AWS Lambda using OpenAI."
+version = "0.2.0"
+description = "Serverless Telegram voice/video transcriber bot on AWS Lambda using OpenAI."
 requires-python = ">=3.12"
 dependencies = [
     "requests",
